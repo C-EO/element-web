@@ -109,7 +109,7 @@ instance. As of writing those settings are not fully documented, however a few a
     }
     ```
     These values will take priority over the hardcoded defaults for the settings. For a list of available settings, see
-    [Settings.tsx](https://github.com/matrix-org/matrix-react-sdk/blob/develop/src/settings/Settings.tsx).
+    [Settings.tsx](https://github.com/element-hq/element-web/blob/develop/src/settings/Settings.tsx).
 
 ## Customisation & branding
 
@@ -154,7 +154,8 @@ complete re-branding/private labeling, a more personalised experience can be ach
     2. `description`: Required. The description to use for the notice.
     3. `show_once`: Optional. If true then the notice will only be shown once per device.
 18. `help_url`: The URL to point users to for help with the app, defaults to `https://element.io/help`.
-19. `help_encrption_url`: The URL to point users to for help with encryption, defaults to `https://element.io/help#encryption`.
+19. `help_encryption_url`: The URL to point users to for help with encryption, defaults to `https://element.io/help#encryption`.
+20. `force_verification`: If true, users must verify new logins (eg. with another device / their security key)
 
 ### `desktop_builds` and `mobile_builds`
 
@@ -167,6 +168,10 @@ Starting with `desktop_builds`, the following subproperties are available:
 1. `available`: Required. When `true`, the desktop app can be downloaded from somewhere.
 2. `logo`: Required. A URL to a logo (SVG), intended to be shown at 24x24 pixels.
 3. `url`: Required. The download URL for the app. This is used as a hyperlink.
+4. `url_macos`: Optional. Direct link to download macOS desktop app.
+5. `url_win32`: Optional. Direct link to download Windows 32-bit desktop app.
+6. `url_win64`: Optional. Direct link to download Windows 64-bit desktop app.
+7. `url_linux`: Optional. Direct link to download Linux desktop app.
 
 When `desktop_builds` is not specified at all, the app will assume desktop downloads are available from https://element.io
 
@@ -250,12 +255,14 @@ When Element is deployed alongside a homeserver with SSO-only login, some option
    user can be sent to in order to log them out of that system too, making logout symmetric between Element and the SSO system.
 2. `sso_redirect_options`: Options to define how to handle unauthenticated users. If the object contains `"immediate": true`, then
    all unauthenticated users will be automatically redirected to the SSO system to start their login. If instead you'd only like to
-   have users which land on the welcome page to be redirected, use `"on_welcome_page": true`. As an example:
+   have users which land on the welcome page to be redirected, use `"on_welcome_page": true`. Additionally, there is an option to
+   redirect anyone landing on the login page, by using `"on_login_page": true`. As an example:
     ```json
     {
         "sso_redirect_options": {
             "immediate": false,
-            "on_welcome_page": true
+            "on_welcome_page": true,
+            "on_login_page": true
         }
     }
     ```
@@ -372,8 +379,8 @@ The VoIP and Jitsi options are:
     }
     ```
     The `widget` is the `content` of a normal widget state event. The `layout` is the layout specifier for the widget being created,
-    as defined by the `io.element.widgets.layout` state event. By default this applies to all rooms, but the behaviour can be skipped for DMs
-    by setting the option `widget_build_url_ignore_dm` to `true`.
+    as defined by the `io.element.widgets.layout` state event. By default this applies to all rooms, but the behaviour can be skipped for
+    2-person rooms, causing Element to fall back to 1:1 VoIP, by setting the option `widget_build_url_ignore_dm` to `true`.
 5. `audio_stream_url`: Optional URL to pass to Jitsi to enable live streaming. This option is considered experimental and may be removed
    at any time without notice.
 6. `element_call`: Optional configuration for native group calls using Element Call, with the following subkeys:
@@ -445,6 +452,12 @@ If you would like to use Scalar, the integration manager maintained by Element, 
     ]
 }
 ```
+
+For widgets in general (from an integration manager or not) there is also:
+
+- `default_widget_container_height`
+
+This controls the height that the top widget panel initially appears as and is the height in pixels, default 280.
 
 ## Administrative options
 
@@ -538,38 +551,38 @@ preferences.
 
 Currently, the following UI feature flags are supported:
 
--   `UIFeature.urlPreviews` - Whether URL previews are enabled across the entire application.
--   `UIFeature.feedback` - Whether prompts to supply feedback are shown.
--   `UIFeature.voip` - Whether or not VoIP is shown readily to the user. When disabled,
-    Jitsi widgets will still work though they cannot easily be added.
--   `UIFeature.widgets` - Whether or not widgets will be shown.
--   `UIFeature.advancedSettings` - Whether or not sections titled "advanced" in room and
-    user settings are shown to the user.
--   `UIFeature.shareQrCode` - Whether or not the QR code on the share room/event dialog
-    is shown.
--   `UIFeature.shareSocial` - Whether or not the social icons on the share room/event dialog
-    are shown.
--   `UIFeature.identityServer` - Whether or not functionality requiring an identity server
-    is shown. When disabled, the user will not be able to interact with the identity
-    server (sharing email addresses, 3PID invites, etc).
--   `UIFeature.thirdPartyId` - Whether or not UI relating to third party identifiers (3PIDs)
-    is shown. Typically this is considered "contact information" on the homeserver, and is
-    not directly related to the identity server.
--   `UIFeature.registration` - Whether or not the registration page is accessible. Typically
-    useful if accounts are managed externally.
--   `UIFeature.passwordReset` - Whether or not the password reset page is accessible. Typically
-    useful if accounts are managed externally.
--   `UIFeature.deactivate` - Whether or not the deactivate account button is accessible. Typically
-    useful if accounts are managed externally.
--   `UIFeature.advancedEncryption` - Whether or not advanced encryption options are shown to the
-    user.
--   `UIFeature.roomHistorySettings` - Whether or not the room history settings are shown to the user.
-    This should only be used if the room history visibility options are managed by the server.
--   `UIFeature.TimelineEnableRelativeDates` - Display relative date separators (eg: 'Today', 'Yesterday') in the
-    timeline for recent messages. When false day dates will be used.
--   `UIFeature.BulkUnverifiedSessionsReminder` - Display popup reminders to verify or remove unverified sessions. Defaults
-    to true.
--   `UIFeature.locationSharing` - Whether or not location sharing menus will be shown.
+- `UIFeature.urlPreviews` - Whether URL previews are enabled across the entire application.
+- `UIFeature.feedback` - Whether prompts to supply feedback are shown.
+- `UIFeature.voip` - Whether or not VoIP is shown readily to the user. When disabled,
+  Jitsi widgets will still work though they cannot easily be added.
+- `UIFeature.widgets` - Whether or not widgets will be shown.
+- `UIFeature.advancedSettings` - Whether or not sections titled "advanced" in room and
+  user settings are shown to the user.
+- `UIFeature.shareQrCode` - Whether or not the QR code on the share room/event dialog
+  is shown.
+- `UIFeature.shareSocial` - Whether or not the social icons on the share room/event dialog
+  are shown.
+- `UIFeature.identityServer` - Whether or not functionality requiring an identity server
+  is shown. When disabled, the user will not be able to interact with the identity
+  server (sharing email addresses, 3PID invites, etc).
+- `UIFeature.thirdPartyId` - Whether or not UI relating to third party identifiers (3PIDs)
+  is shown. Typically this is considered "contact information" on the homeserver, and is
+  not directly related to the identity server.
+- `UIFeature.registration` - Whether or not the registration page is accessible. Typically
+  useful if accounts are managed externally.
+- `UIFeature.passwordReset` - Whether or not the password reset page is accessible. Typically
+  useful if accounts are managed externally.
+- `UIFeature.deactivate` - Whether or not the deactivate account button is accessible. Typically
+  useful if accounts are managed externally.
+- `UIFeature.advancedEncryption` - Whether or not advanced encryption options are shown to the
+  user.
+- `UIFeature.roomHistorySettings` - Whether or not the room history settings are shown to the user.
+  This should only be used if the room history visibility options are managed by the server.
+- `UIFeature.TimelineEnableRelativeDates` - Display relative date separators (eg: 'Today', 'Yesterday') in the
+  timeline for recent messages. When false day dates will be used.
+- `UIFeature.BulkUnverifiedSessionsReminder` - Display popup reminders to verify or remove unverified sessions. Defaults
+  to true.
+- `UIFeature.locationSharing` - Whether or not location sharing menus will be shown.
 
 ## Undocumented / developer options
 
@@ -579,4 +592,3 @@ The following are undocumented or intended for developer use only.
 2. `sync_timeline_limit`
 3. `dangerously_allow_unsafe_and_insecure_passwords`
 4. `latex_maths_delims`: An optional setting to override the default delimiters used for maths parsing. See https://github.com/matrix-org/matrix-react-sdk/pull/5939 for details. Only used when `feature_latex_maths` is enabled.
-5. `voice_broadcast.chunk_length`: Target chunk length in seconds for the Voice Broadcast feature currently under development.

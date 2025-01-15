@@ -9,13 +9,18 @@ on:
 concurrency:
     group: ${{ github.repository_owner }}-${{ github.workflow }}-${{ github.ref_name }}
     cancel-in-progress: true
+permissions: {}
 jobs:
     build:
         name: "Build & Deploy develop.element.io"
         # Only respect triggers from our develop branch, ignore that of forks
         if: github.repository == 'element-hq/element-web'
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         environment: develop
+        permissions:
+            checks: read
+            pages: write
+            deployments: write
         env:
             R2_BUCKET: "element-web-develop"
             R2_URL: ${{ vars.CF_R2_S3_API }}
@@ -26,6 +31,7 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   cache: "yarn"
+                  node-version: "lts/*"
 
             - name: Install Dependencies
               run: "./scripts/layered.sh"
