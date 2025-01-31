@@ -1,17 +1,8 @@
 /*
-Copyright 2022 New Vector Ltd.
+Copyright 2022-2024 New Vector Ltd.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+SPDX-License-Identifier: AGPL-3.0-only OR GPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
 */
 
 import * as fs from "fs";
@@ -32,10 +23,9 @@ const MODULES_TS_HEADER = `
  * You are not a salmon.
  */
 
-import { RuntimeModule } from "@matrix-org/react-sdk-module-api/lib/RuntimeModule";
 `;
 const MODULES_TS_DEFINITIONS = `
-export const INSTALLED_MODULES: RuntimeModule[] = [];
+export const INSTALLED_MODULES = [];
 `;
 
 export function installer(config: BuildConfig): void {
@@ -87,8 +77,8 @@ export function installer(config: BuildConfig): void {
             return; // hit the finally{} block before exiting
         }
 
-        // If we reach here, everything seems fine. Write modules.ts and log some output
-        // Note: we compile modules.ts in two parts for developer friendliness if they
+        // If we reach here, everything seems fine. Write modules.js and log some output
+        // Note: we compile modules.js in two parts for developer friendliness if they
         // happen to look at it.
         console.log("The following modules have been installed: ", installedModules);
         let modulesTsHeader = MODULES_TS_HEADER;
@@ -202,5 +192,5 @@ function isModuleVersionCompatible(ourApiVersion: string, moduleApiVersion: stri
 }
 
 function writeModulesTs(content: string): void {
-    fs.writeFileSync("./src/modules.ts", content, "utf-8");
+    fs.writeFileSync("./src/modules.js", content, "utf-8");
 }
